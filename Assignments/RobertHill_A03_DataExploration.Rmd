@@ -33,7 +33,7 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Ex
 1.  Check your working directory, load necessary packages (tidyverse, lubridate), and upload two datasets: the ECOTOX neonicotinoid dataset (ECOTOX_Neonicotinoids_Insects_raw.csv) and the Niwot Ridge NEON dataset for litter and woody debris (NEON_NIWO_Litter_massdata_2018-08_raw.csv). Name these datasets "Neonics" and "Litter", respectively. Be sure to include the subcommand to read strings in as factors.
 
 ```{r,  message = FALSE}
-getwd() #finds the working directory so I can shorthand point to the file within the wd
+getwd() #finds the working directory so I can  point to the file within the wd
 library(tidyverse)
 Neonics <- read.csv("./Data/Raw/ECOTOX_Neonicotinoids_Insects_raw.csv",stringsAsFactors = T)
 Litter <- read.csv("./Data/Raw/NEON_NIWO_Litter_massdata_2018-08_raw.csv",stringsAsFactors = T)
@@ -68,52 +68,57 @@ dim(Neonics) #provides number of row columns in data
 6.  Using the `summary` function on the "Effect" column, determine the most common effects that are studied. Why might these effects specifically be of interest?
 
 ```{r}
-
+summary(Neonics$Effect)
 ```
 
-> Answer:
+> Answer: The most common effects are mortality and population. These are of interests because it is linked efficacy of the insecticide for the purpose for which it is used.
 
 
 7.  Using the `summary` function, determine the six most commonly studied species in the dataset (common name). What do these species have in common, and why might they be of interest over other insects? Feel free to do a brief internet search for more information if needed.[TIP: The `sort()` command can sort the output of the summary command...]
 
 ```{r}
-
+summary(Neonics$Species.Common.Name)
 ```
 
-> Answer:
+> Answer: This is interesting (and intuitive) because neonicotinoids are responsible for colony callapse disorder. Most of the top species are in fact bees.
 
 8.  Concentrations are always a numeric value. What is the class of `Conc.1..Author.` column in the dataset, and why is it not numeric?
 
 ```{r}
+class(Neonics$Conc.1..Author.) #this determines the data class of this column
 
 ```
 
-> Answer:
+> Answer: the class is not numeric because there are non-numeric symbols in the cells; such as <, /, and ~.
 
 ## Explore your data graphically (Neonics)
 
 9.  Using `geom_freqpoly`, generate a plot of the number of studies conducted by publication year.
 
 ```{r}
-
+ggplot(Neonics) +
+  geom_freqpoly(aes(x = Publication.Year))
 ```
 
 10. Reproduce the same graph but now add a color aesthetic so that different Test.Location are displayed as different colors.
 
 ```{r}
-
+ggplot(Neonics) +
+  geom_freqpoly(aes(x = Publication.Year, color = Test.Location))
 ```
 
 Interpret this graph. What are the most common test locations, and do they differ over time?
 
-> Answer:
+> Answer: This graph portrays the frequency of studies conducted on neonicotinoids categorized by where the study occured (in different types of field settings or in the lab). In the 90s, the most prominent study location was in the natural field environment; however as we move into the 21st century, studies became for frequent in laboratory settings. The frequency of natural field studies didn't change too drastically, but a large addition of lab studies began to emerge into the 21st century.
 
 11. Create a bar graph of Endpoint counts. What are the two most common end points, and how are they defined? Consult the ECOTOX_CodeAppendix for more information. 
 
 [**TIP**: Add `theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))` to the end of your plot command to rotate and align the X-axis labels...]
 
 ```{r}
-
+ggplot(Neonics) +
+  geom_bar(aes(x = Endpoint)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 ```
 
 > Answer:
