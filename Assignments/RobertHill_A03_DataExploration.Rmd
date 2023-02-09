@@ -96,6 +96,7 @@ class(Neonics$Conc.1..Author.) #this determines the data class of this column
 9.  Using `geom_freqpoly`, generate a plot of the number of studies conducted by publication year.
 
 ```{r}
+#create a frequency line graph of studies over time
 ggplot(Neonics) +
   geom_freqpoly(aes(x = Publication.Year))
 ```
@@ -103,6 +104,7 @@ ggplot(Neonics) +
 10. Reproduce the same graph but now add a color aesthetic so that different Test.Location are displayed as different colors.
 
 ```{r}
+#create a frequency line graph of studies over time, seperated based on testing environment
 ggplot(Neonics) +
   geom_freqpoly(aes(x = Publication.Year, color = Test.Location))
 ```
@@ -116,12 +118,14 @@ Interpret this graph. What are the most common test locations, and do they diffe
 [**TIP**: Add `theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))` to the end of your plot command to rotate and align the X-axis labels...]
 
 ```{r}
+#create a bar frequency plot of common measurable endpoints with default aesthetics [aes()]
+#and adjusted the text with theme() so that is is legible and not overlapping
 ggplot(Neonics) +
   geom_bar(aes(x = Endpoint)) +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 ```
 
-> Answer:
+> Answer: the most common endpoints are the LOEL (lowest observable effect level) which is the lowest concentration for which there was a statistically significant response and NOEL (no observable effect level) which is the highest concentration for which there is no statistically significant response.
 
 ## Explore your data (Litter)
 
