@@ -132,33 +132,43 @@ ggplot(Neonics) +
 12. Determine the class of collectDate. Is it a date? If not, change to a date and confirm the new class of the variable. Using the `unique` function, determine which dates litter was sampled in August 2018.
 
 ```{r}
-
+class(Litter$collectDate) #this determines the class of the collectDate column
+library(lubridate)
+CollectDate <-ymd(Litter$collectDate) #identify collectDate as a Date class
+class(CollectDate) #confirms CollectDate is a date class
+unique(CollectDate) #this returns a list of unique values during which litter was sampled
 ```
 
 13. Using the `unique` function, determine how many plots were sampled at Niwot Ridge. How is the information obtained from `unique` different from that obtained from `summary`?
 
 ```{r}
-
+unique(Litter$plotID) #number of unique plot IDs (aka # of plots sampled)
+summary(Litter$plotID) #ran summary function to compare output
 ```
 
-> Answer:
+> Answer: 'unique' provides information regarding the number of unique values while 'summary' only lists the unique values, requiring us to count how many unique values ourselves.
 
 14. Create a bar graph of functionalGroup counts. This shows you what type of litter is collected at the Niwot Ridge sites. Notice that litter types are fairly equally distributed across the Niwot Ridge sites.
 
 ```{r}
-
+ggplot(Litter) +
+  geom_bar(aes(functionalGroup))
 ```
 
 15. Using `geom_boxplot` and `geom_violin`, create a boxplot and a violin plot of dryMass by functionalGroup.
 
 ```{r}
+ggplot(Litter) +
+  geom_boxplot(aes(functionalGroup,dryMass))
 
+ggplot(Litter) +
+  geom_violin(aes(functionalGroup,dryMass))
 ```
 
 Why is the boxplot a more effective visualization option than the violin plot in this case?
 
-> Answer:
+> Answer: The boxplot provides more visual statistical information like as median and outliers. Although a violin plot can show this information and more, there is not high enough density of discrete values for the plot to be effective.
 
 What type(s) of litter tend to have the highest biomass at these sites?
 
-> Answer:
+> Answer: Needles tend to have the highest biomass at these sites.
