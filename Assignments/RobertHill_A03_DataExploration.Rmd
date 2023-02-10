@@ -1,6 +1,6 @@
 ---
 title: "Assignment 3: Data Exploration"
-author: "Robert Hill
+author: "Robert Hill"
 date: "Spring 2023"
 output: pdf_document
 geometry: margin=2.54cm
@@ -32,7 +32,7 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Ex
 
 1.  Check your working directory, load necessary packages (tidyverse, lubridate), and upload two datasets: the ECOTOX neonicotinoid dataset (ECOTOX_Neonicotinoids_Insects_raw.csv) and the Niwot Ridge NEON dataset for litter and woody debris (NEON_NIWO_Litter_massdata_2018-08_raw.csv). Name these datasets "Neonics" and "Litter", respectively. Be sure to include the subcommand to read strings in as factors.
 
-```{r,  message = FALSE}
+```{r Aquiring-Data,  message = FALSE}
 getwd() #finds the working directory so I can  point to the file within the wd
 library(tidyverse)
 Neonics <- read.csv("./Data/Raw/ECOTOX_Neonicotinoids_Insects_raw.csv",stringsAsFactors = T)
@@ -61,13 +61,13 @@ Litter <- read.csv("./Data/Raw/NEON_NIWO_Litter_massdata_2018-08_raw.csv",string
 
 5.  What are the dimensions of the dataset?
 
-```{r}
+```{r Assessing-Dimensions}
 dim(Neonics) #provides number of row columns in data
 ```
 
 6.  Using the `summary` function on the "Effect" column, determine the most common effects that are studied. Why might these effects specifically be of interest?
 
-```{r}
+```{r Aquiring-Summary-Neonics}
 summary(Neonics$Effect)
 ```
 
@@ -76,7 +76,7 @@ summary(Neonics$Effect)
 
 7.  Using the `summary` function, determine the six most commonly studied species in the dataset (common name). What do these species have in common, and why might they be of interest over other insects? Feel free to do a brief internet search for more information if needed.[TIP: The `sort()` command can sort the output of the summary command...]
 
-```{r}
+```{r Aquiring-Summary-of-Species}
 summary(Neonics$Species.Common.Name)
 ```
 
@@ -84,7 +84,7 @@ summary(Neonics$Species.Common.Name)
 
 8.  Concentrations are always a numeric value. What is the class of `Conc.1..Author.` column in the dataset, and why is it not numeric?
 
-```{r}
+```{r Determine-Class-of-Concentration-Data}
 class(Neonics$Conc.1..Author.) #this determines the data class of this column
 
 ```
@@ -95,18 +95,18 @@ class(Neonics$Conc.1..Author.) #this determines the data class of this column
 
 9.  Using `geom_freqpoly`, generate a plot of the number of studies conducted by publication year.
 
-```{r}
+```{r Frequency-Line-Graph-Neonic-PubYear}
 #create a frequency line graph of studies over time
 ggplot(Neonics) +
-  geom_freqpoly(aes(x = Publication.Year))
+  geom_freqpoly(aes(x = Publication.Year), bins=38)
 ```
 
 10. Reproduce the same graph but now add a color aesthetic so that different Test.Location are displayed as different colors.
 
-```{r}
-#create a frequency line graph of studies over time, seperated based on testing environment
+```{r Frequency-Line-Graph-Neonic-PubYear-by-Location}
+#create a frequency line graph of studies over time, separated based on testing environment
 ggplot(Neonics) +
-  geom_freqpoly(aes(x = Publication.Year, color = Test.Location))
+  geom_freqpoly(aes(x = Publication.Year, color = Test.Location), bins=38)
 ```
 
 Interpret this graph. What are the most common test locations, and do they differ over time?
@@ -117,7 +117,7 @@ Interpret this graph. What are the most common test locations, and do they diffe
 
 [**TIP**: Add `theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))` to the end of your plot command to rotate and align the X-axis labels...]
 
-```{r}
+```{r Bar-Graph-Neonic-Endpoints}
 #create a bar frequency plot of common measurable endpoints with default aesthetics [aes()]
 #and adjusted the text with theme() so that is is legible and not overlapping
 ggplot(Neonics) +
@@ -131,7 +131,7 @@ ggplot(Neonics) +
 
 12. Determine the class of collectDate. Is it a date? If not, change to a date and confirm the new class of the variable. Using the `unique` function, determine which dates litter was sampled in August 2018.
 
-```{r}
+```{r Making-sure-date-column-is-a-date-class}
 class(Litter$collectDate) #this determines the class of the collectDate column
 library(lubridate)
 CollectDate <-ymd(Litter$collectDate) #identify collectDate as a Date class
@@ -141,12 +141,12 @@ unique(CollectDate) #this returns a list of unique values during which litter wa
 
 13. Using the `unique` function, determine how many plots were sampled at Niwot Ridge. How is the information obtained from `unique` different from that obtained from `summary`?
 
-```{r}
+```{r unique-vs-summary-functions}
 unique(Litter$plotID) #number of unique plot IDs (aka # of plots sampled)
 summary(Litter$plotID) #ran summary function to compare output
 ```
 
-> Answer: 'unique' provides information regarding the number of unique values while 'summary' only lists the unique values, requiring us to count how many unique values ourselves.
+> Answer: 'unique' provides information regarding the number of unique values (12) while 'summary' only lists the unique values, requiring us to count how many unique values ourselves.
 
 14. Create a bar graph of functionalGroup counts. This shows you what type of litter is collected at the Niwot Ridge sites. Notice that litter types are fairly equally distributed across the Niwot Ridge sites.
 
