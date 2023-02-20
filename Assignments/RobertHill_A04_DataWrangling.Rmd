@@ -102,10 +102,14 @@ EPAair_PM25_NC19_Processed <-
   mutate(AQS_PARAMETER_DESC = "PM2.5")
 
 #6
-write.csv(EPAair_O3_NC18_Processed,row.names = FALSE, file ="./Data/Processed/EPAair_O3_NC2018_Processed.csv")
-write.csv(EPAair_O3_NC19_Processed,row.names = FALSE, file ="./Data/Processed/EPAair_O3_NC2019_Processed.csv")
-write.csv(EPAair_PM25_NC18_Processed,row.names = FALSE, file ="./Data/Processed/EPAair_PM25_NC2018_Processed.csv")
-write.csv(EPAair_PM25_NC19_Processed,row.names = FALSE, file ="./Data/Processed/EPAair_PM25_NC2019_Processed.csv")
+write.csv(EPAair_O3_NC18_Processed,row.names = FALSE, 
+          file ="./Data/Processed/EPAair_O3_NC2018_Processed.csv")
+write.csv(EPAair_O3_NC19_Processed,row.names = FALSE, 
+          file ="./Data/Processed/EPAair_O3_NC2019_Processed.csv")
+write.csv(EPAair_PM25_NC18_Processed,row.names = FALSE, 
+          file ="./Data/Processed/EPAair_PM25_NC2018_Processed.csv")
+write.csv(EPAair_PM25_NC19_Processed,row.names = FALSE, 
+          file ="./Data/Processed/EPAair_PM25_NC2019_Processed.csv")
 ```
 
 
@@ -131,12 +135,16 @@ write.csv(EPAair_PM25_NC19_Processed,row.names = FALSE, file ="./Data/Processed/
 
 ```{r}
 #7
-EPAair_Full <- rbind(EPAair_O3_NC18_Processed,EPAair_O3_NC19_Processed,EPAair_PM25_NC18_Processed,EPAair_PM25_NC19_Processed)
+EPAair_Full <- rbind(EPAair_O3_NC18_Processed,EPAair_O3_NC19_Processed,EPAair_PM25_NC18_Processed,
+                     EPAair_PM25_NC19_Processed)
 
 #8 
 EPAair_Full_Processed <-
   EPAair_Full %>%
-  filter(Site.Name %in% c("Linville Falls", "Durham Armory", "Leggett", "Hattie Avenue", "Clemmons Middle", "Mendenhall School", "Frying Pan Mountain", "West Johnston Co.", "Garinger High School", "Castle Hayne", "Pitt Agri. Center", "Bryson City", "Millbrook School")) %>%
+  filter(Site.Name %in% c("Linville Falls", "Durham Armory", "Leggett", "Hattie Avenue", 
+                          "Clemmons Middle", "Mendenhall School", "Frying Pan Mountain", 
+                          "West Johnston Co.", "Garinger High School", "Castle Hayne", 
+                          "Pitt Agri. Center", "Bryson City", "Millbrook School")) %>%
   group_by(Date, Site.Name, AQS_PARAMETER_DESC, COUNTY) %>%
   summarise(AQI = mean(DAILY_AQI_VALUE),
             Latitude = mean(SITE_LATITUDE),
@@ -144,7 +152,8 @@ EPAair_Full_Processed <-
   separate(Date,  c("Y", "m", "d"))
 
 #9
-EPAair_O3_PM25_NC1819_Processed <- pivot_wider(EPAair_Full_Processed,names_from = AQS_PARAMETER_DESC, values_from = AQI)
+EPAair_O3_PM25_NC1819_Processed <- pivot_wider(EPAair_Full_Processed,names_from = 
+                                                 AQS_PARAMETER_DESC, values_from = AQI)
 
 #10
 dim(EPAair_O3_PM25_NC1819_Processed)
