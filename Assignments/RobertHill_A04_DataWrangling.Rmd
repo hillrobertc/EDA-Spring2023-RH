@@ -55,6 +55,11 @@ EPAair_PM25_NC18 <- read.csv("./Data/Raw/EPAair_PM25_NC2018_raw.csv",stringsAsFa
 EPAair_PM25_NC19 <- read.csv("./Data/Raw/EPAair_O3_NC2019_raw.csv",stringsAsFactors = T)
 
 #2 
+glimpse(EPAair_O3_NC18)
+glimpse(EPAair_O3_NC19)
+glimpse(EPAair_PM25_NC18)
+glimpse(EPAair_PM25_NC19)
+
 
 ```
 
@@ -71,13 +76,36 @@ EPAair_PM25_NC19 <- read.csv("./Data/Raw/EPAair_O3_NC2019_raw.csv",stringsAsFact
 
 ```{r}
 #3
+EPAair_O3_NC18$Date <- as.Date(EPAair_O3_NC18$Date, format = "%m/%d/%Y")
+EPAair_O3_NC19$Date <- as.Date(EPAair_O3_NC19$Date, format = "%m/%d/%Y")
+EPAair_PM25_NC18$Date <- as.Date(EPAair_PM25_NC18$Date, format = "%m/%d/%Y")
+EPAair_PM25_NC19$Date <- as.Date(EPAair_PM25_NC19$Date, format = "%m/%d/%Y")
 
-#4
+#4-5
 
-#5
+EPAair_O3_NC18_Processed <-
+  EPAair_O3_NC18 %>%
+  select(Date, DAILY_AQI_VALUE,Site.Name,AQS_PARAMETER_DESC,COUNTY,SITE_LATITUDE,SITE_LONGITUDE)
+
+EPAair_O3_NC19_Processed <-
+  EPAair_O3_NC19 %>%
+  select(Date, DAILY_AQI_VALUE,Site.Name,AQS_PARAMETER_DESC,COUNTY,SITE_LATITUDE,SITE_LONGITUDE)
+
+EPAair_PM25_NC18_Processed <-
+  EPAair_PM25_NC18 %>%
+  select(Date, DAILY_AQI_VALUE,Site.Name,AQS_PARAMETER_DESC,COUNTY,SITE_LATITUDE,SITE_LONGITUDE) %>%
+  mutate(AQS_PARAMETER_DESC = "PM2.5")
+
+EPAair_PM25_NC19_Processed <-
+  EPAair_PM25_NC19 %>%
+  select(Date, DAILY_AQI_VALUE,Site.Name,AQS_PARAMETER_DESC,COUNTY,SITE_LATITUDE,SITE_LONGITUDE) %>%
+  mutate(AQS_PARAMETER_DESC = "PM2.5")
 
 #6
-
+write.csv(EPAair_O3_NC18_Processed,row.names = FALSE, file ="./Data/Processed/EPAair_O3_NC2018_Processed.csv")
+write.csv(EPAair_O3_NC19_Processed,row.names = FALSE, file ="./Data/Processed/EPAair_O3_NC2019_Processed.csv")
+write.csv(EPAair_PM25_NC18_Processed,row.names = FALSE, file ="./Data/Processed/EPAair_PM25_NC2018_Processed.csv")
+write.csv(EPAair_PM25_NC19_Processed,row.names = FALSE, file ="./Data/Processed/EPAair_PM25_NC2019_Processed.csv")
 ```
 
 
