@@ -130,15 +130,27 @@ write.csv(EPAair_PM25_NC19_Processed,row.names = FALSE, file ="./Data/Processed/
 11. Save your processed dataset with the following file name: "EPAair_O3_PM25_NC1819_Processed.csv"
 
 ```{r}
-#7 
+#7
+EPAair_Full <- rbind(EPAair_O3_NC18_Processed,EPAair_O3_NC19_Processed,EPAair_PM25_NC18_Processed,EPAair_PM25_NC19_Processed)
 
 #8 
+EPAair_Full_Processed <-
+  EPAair_Full %>%
+  filter(Site.Name %in% c("Linville Falls", "Durham Armory", "Leggett", "Hattie Avenue", "Clemmons Middle", "Mendenhall School", "Frying Pan Mountain", "West Johnston Co.", "Garinger High School", "Castle Hayne", "Pitt Agri. Center", "Bryson City", "Millbrook School")) %>%
+  group_by(Date, Site.Name, AQS_PARAMETER_DESC, COUNTY) %>%
+  summarise(AQI = mean(DAILY_AQI_VALUE),
+            Latitude = mean(SITE_LATITUDE),
+            Longitude = mean(SITE_LONGITUDE)) %>%
+  separate(Date,  c("Y", "m", "d"))
 
 #9
+EPAair_O3_PM25_NC1819_Processed <- pivot_wider(EPAair_Full_Processed,names_from = AQS_PARAMETER_DESC, values_from = AQI)
 
 #10
+dim(EPAair_O3_PM25_NC1819_Processed)
 
 #11
+write.csv(EPAair_O3_PM25_NC1819_Processed,row.names = FALSE, file ="./Data/Processed/EPAair_O3_PM25_NC1819_Processed.csv")
 
 ```
 
@@ -152,13 +164,18 @@ write.csv(EPAair_PM25_NC19_Processed,row.names = FALSE, file ="./Data/Processed/
 ```{r}
 
 #12
-
+EPAair_O3_PM25_NC1819_Processed.Summary <-
+  EPAair_O3_PM25_NC1819_Processed %>%
+  group_by(Site.Name, m, Y) %>%
+  summarise(OzoneAQI = mean(Ozone),
+            PM2.5AQI = mean(PM2.5)) %>%
+  drop_na(OzoneAQI)
 
 #13
-
+dim(EPAair_O3_PM25_NC1819_Processed.Summary)
 
 ```
 
 14. Why did we use the function `drop_na` rather than `na.omit`?
 
-> Answer: 
+> Answer: Using the na.omit function returns an "object 'OzoneAQI' not found" error message!
