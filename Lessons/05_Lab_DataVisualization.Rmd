@@ -93,14 +93,24 @@ Say we want to plot the number of records each month in the Peter/Paul lakes dat
 
 ```{r Plot the number of records by month}
 #What kind of values are months?
+class(PeterPaul.chem.nutrients$month)
 
 #List unique values
+unique(PeterPaul.chem.nutrients$month)
 
 #Plot how many Lake observations occur each month
+ggplot(PeterPaul.chem.nutrients,aes(x=month)) +
+  geom_bar()
 
 #Convert month to a factor -- with 12 levels, labelled with month names
+factor(PeterPaul.chem.nutrients$month)
 
 #Try again: Plot how many Lake observations occur each month
+ggplot(PeterPaul.chem.nutrients,aes(x=factor(month, level=1:12,labels=month.abb))) +
+  geom_bar() +
+  scale_x_discrete(drop=FALSE) +
+  labs(x="Month")
+
 
 #Alter to include missing months
 
