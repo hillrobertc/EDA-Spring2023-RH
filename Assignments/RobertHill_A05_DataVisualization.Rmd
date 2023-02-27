@@ -70,9 +70,11 @@ my_theme <- theme_base() +
   theme(
     plot.background = element_rect(
       color='white',
-      fill = 'darkseagreen'
+      fill = 'gray'
     ),
-    legend.position = "bottom", legend.box = "horizontal"
+    legend.position = "bottom", legend.box = "horizontal",
+    legend.title = element_text(face = "bold"),
+    plot.title = element_text(hjust = 0.5)
   )
 ```
 
@@ -83,6 +85,26 @@ For numbers 4-7, create ggplot graphs and adjust aesthetics to follow best pract
 
 ```{r plot total P vs PO4}
 #4 
+Phosphorus_Plot <- PeterPaul.chem.nutrients %>%
+  ggplot(
+    mapping = aes(
+      x=tp_ug,
+      y=po4,
+    )
+  ) +
+  geom_point(aes(color=lakename)) +
+  ylim(0, 50) +
+  my_theme +
+  labs(
+    title = "Phophorus Content",
+    x = "Total Phosphorus",
+    y = "Phosphate",
+    color = ""
+  ) +
+  geom_smooth(method = "lm", se=FALSE, col="black")
+
+
+Phosphorus_Plot
 
 ```
 
@@ -92,7 +114,28 @@ For numbers 4-7, create ggplot graphs and adjust aesthetics to follow best pract
 Tip: R has a build in variable called `month.abb` that returns a list of months;see <https://r-lang.com/month-abb-in-r-with-example>
 
 ```{r Create boxplots}
-#5 
+#5
+Temp <- ggplot(PeterPaul.chem.nutrients,aes(
+  x=factor(month, level=1:12,labels=month.abb), y=temperature_C, color=lakename)) + 
+  geom_boxplot() +
+  theme(axis.title.x=element_blank(),legend.position = "none") +
+  ylab("Temperature")
+TP <- ggplot(PeterPaul.chem.nutrients,aes(
+  x=factor(month, level=1:12,labels=month.abb), y=tp_ug, color=lakename)) + 
+  geom_boxplot() +
+  theme(axis.title.x=element_blank(),legend.position = "none") +
+  ylab("Total Phosphorus")
+TN <- ggplot(PeterPaul.chem.nutrients,aes(
+  x=factor(month, level=1:12,labels=month.abb), y=tn_ug, color=lakename)) + 
+  geom_boxplot() +
+  theme(axis.title.x=element_blank(),legend.position="bottom",legend.box="horizontal") +
+  labs(y="Total Nitrogen",color="")
+  
+plot_grid(
+  Temp,TP,TN,
+  align="v",
+  nrow=3
+)
 
 ```
 
