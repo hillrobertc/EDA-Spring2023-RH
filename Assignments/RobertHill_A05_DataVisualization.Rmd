@@ -158,7 +158,8 @@ ggplot(NEON.Litter,aes(collectDate,dryMass,color=nlcdClass)) +
 #7
 ggplot(NEON.Litter,aes(collectDate,dryMass,color=nlcdClass)) +
   geom_point(data=subset(NEON.Litter,functionalGroup=="Needles")) +
-  facet_grid(.~nlcdClass)
+  facet_grid(.~nlcdClass) +
+  theme(legend.position = "none")
 
 ```
 Question: Which of these plots (6 vs. 7) do you think is more effective, and why? 
