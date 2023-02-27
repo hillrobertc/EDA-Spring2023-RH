@@ -33,9 +33,27 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Vi
 ```{r initialize project}
 #1
 library(tidyverse);library(lubridate);library(here);library(cowplot)
-getwd()
-#2 
 
+getwd()
+
+PeterPaul.chem.nutrients <- read.csv(
+  "./Data/Processed/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv",
+  stringsAsFactors = TRUE)
+
+NEON.Litter <- read.csv(
+  "./Data/Processed/NEON_NIWO_Litter_mass_trap_Processed.csv",
+  stringsAsFactors = TRUE)
+
+#2 
+#check if class is date, it is not. It is factor
+class(PeterPaul.chem.nutrients$sampledate)
+class(NEON.Litter$collectDate)
+#change date data to date class
+PeterPaul.chem.nutrients$sampledate <- ymd(PeterPaul.chem.nutrients$sampledate)
+NEON.Litter$collectDate <- ymd(NEON.Litter$collectDate)
+#confirm dates read as a date class
+class(PeterPaul.chem.nutrients$sampledate)
+class(NEON.Litter$collectDate)
 ```
 ## Define your theme
 3. Build a theme and set it as your default theme. Customize the look of at least two of the following: 
@@ -47,7 +65,15 @@ getwd()
 
 ```{r build plot theme}
 #3
-
+library(ggthemes)
+my_theme <- theme_base() + 
+  theme(
+    plot.background = element_rect(
+      color='white',
+      fill = 'darkseagreen'
+    ),
+    legend.position = "bottom", legend.box = "horizontal"
+  )
 ```
 
 ## Create graphs
