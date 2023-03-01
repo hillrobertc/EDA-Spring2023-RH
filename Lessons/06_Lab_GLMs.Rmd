@@ -99,16 +99,25 @@ What other variables can we add to improve model?
 ```{r}
 
 #Exercise 4: Build correlation plots and identify more possible explanatory variables to add to the regression.
-
-
+library(corrplot)
+EPAair_corr <-EPAair %>%
+  select(mean_Lat:Ozone) %>%
+  na.omit()
+corrplot.mixed(cor(EPAair_corr),upper="ellipse")
 
 
 #Exercise 5: Choose a model by AIC in a Stepwise Algorithm. Do the results from AIC match the variables you selected on Exercise 4?
 
 
-
+OzonebyALL.regression <-
+  lm(data=EPAair_corr,PM2.5 ~ Ozone + Year + Month + mean_Lng + mean_Lat)
+step(OzonebyALL.regression)
 
 #Exercise 6: Run another regression using the variables selected on Exercise 6. Compare r-squared value with the one from Exercise 2. 
+
+OzoneBest.regression <-
+  lm(data=EPAair_corr,PM2.5 ~ Ozone + Month + mean_Lng + mean_Lat)
+summary(OzonebyALL.regression)
 
 ```
 
