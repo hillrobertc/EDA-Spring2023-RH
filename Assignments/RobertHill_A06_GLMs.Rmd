@@ -27,6 +27,15 @@ This exercise accompanies the lessons in Environmental Data Analytics on general
 
 ```{r setup2}
 #1
+getwd()
+library(tidyverse); library(agricolae); library(lubridate)
+LakeChemPhys <- 
+  read.csv("./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv",
+  stringsAsFactors = TRUE)
+class(LakeChemPhys$sampledate)
+LakeChemPhys$sampledate <-mdy(LakeChemPhys$sampledate)
+class(LakeChemPhys$sampledate)
+
 
 
 #2
