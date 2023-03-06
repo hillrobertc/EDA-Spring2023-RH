@@ -37,9 +37,10 @@ LakeChemPhys$sampledate <-mdy(LakeChemPhys$sampledate)
 class(LakeChemPhys$sampledate)
 
 
-
 #2
-
+mytheme <- theme_bw(base_size = 14) +
+  theme(axis.text = element_text(color = "black"))
+theme_set(mytheme)
 
 ```
 
@@ -48,8 +49,10 @@ Our first research question is: Does mean lake temperature recorded during July 
 
 3. State the null and alternative hypotheses for this question:
 > Answer:
-H0: 
-Ha: 
+H0: Mean lake temperature recorded during July does not change significantly with
+depth across all lakes.
+Ha: Mean lake temperature recorded during July DOES change significantly with
+depth across all lakes.
 
 
 4.  Wrangle your NTL-LTER dataset with a pipe function so that the records meet the following criteria: 
@@ -61,31 +64,50 @@ Ha:
 
 ```{r scatterplot}
 #4
+LakeChemPhys$month <- (month(ymd(LakeChemPhys$sampledate)))
+JulyLakeTemp <- LakeChemPhys %>% #July is days 182:212
+  filter(month == 7) %>%
+  select(`lakename`, `year4`, `daynum`, `depth`, `temperature_C`) %>%
+  na.omit()
 
 
 #5
-
+TempDepth <-
+  ggplot(JulyLakeTemp,aes(x=depth,y=temperature_C)) +
+  geom_point() +
+  geom_smooth(method="lm",color="blue",se=FALSE) +
+  ylim(0,35) +
+  labs(x="Depth (m)",y="Temperature (C)")
+plot(TempDepth)
 
 ```
 
 
 6. Interpret the figure. What does it suggest with regards to the response of temperature to depth? Do the distribution of points suggest about anything about the linearity of this trend?
 
-> Answer: 
+> Answer: The response of temerature to depth appears to be relatively linear due to
+the distribution of the points. There seems to be a relatively rapid decrease
+in temperature until 7 meters depth, where the decrease in temperature over depths
+plateaus or begins to decrease slowly; but there also seems to be substantially less
+data collected pass this depth.
 
 
 7. Perform a linear regression to test the relationship and display the results
 
 ```{r linear.regression}
 #7
-
+TempbyDepth <- lm(data=JulyLakeTemp, depth ~ temperature_C)
+summary(TempbyDepth)
 
 ```
 
 
 8. Interpret your model results in words. Include how much of the variability in temperature is explained by changes in depth, the degrees of freedom on which this finding is based, and the statistical significance of the result. Also mention how much temperature is predicted to change for every 1m change in depth. 
 
-> Answer:
+> Answer: There is a statistically significant change in lake temperature by
+depth (p < 0.001). This model calcuated that 74% of the variability in temperature
+us explained by changes in depth, with 9726 degrees of freedom. For every meter
+further in depth, temperature is expected to change -0.38 deg C.
 
 
 ---
