@@ -28,7 +28,7 @@ This exercise accompanies the lessons in Environmental Data Analytics on general
 ```{r setup2}
 #1
 getwd()
-library(tidyverse); library(agricolae); library(lubridate)
+library(tidyverse); library(agricolae); library(lubridate); library(RColorBrewer)
 LakeChemPhys <- 
   read.csv("./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv",
   stringsAsFactors = TRUE)
@@ -96,7 +96,7 @@ data collected pass this depth.
 
 ```{r linear.regression}
 #7
-TempbyDepth <- lm(data=JulyLakeTemp, depth ~ temperature_C)
+TempbyDepth <- lm(data=JulyLakeTemp, temperature_C ~ depth)
 summary(TempbyDepth)
 
 ```
@@ -105,9 +105,9 @@ summary(TempbyDepth)
 8. Interpret your model results in words. Include how much of the variability in temperature is explained by changes in depth, the degrees of freedom on which this finding is based, and the statistical significance of the result. Also mention how much temperature is predicted to change for every 1m change in depth. 
 
 > Answer: There is a statistically significant change in lake temperature by
-depth (p < 0.001). This model calcuated that 74% of the variability in temperature
+depth (p < 0.001). This model calcuated that 73.87% of the variability in temperature
 us explained by changes in depth, with 9726 degrees of freedom. For every meter
-further in depth, temperature is expected to change -0.38 deg C.
+further in depth, temperature is expected to change -1.95 deg C.
 
 
 ---
@@ -122,17 +122,21 @@ Let's tackle a similar question from a different approach. Here, we want to expl
 
 ```{r temperature.model}
 #9
-
+TempbyAll <- lm(data=JulyLakeTemp, temperature_C ~ depth + year4 + daynum)
+step(TempbyAll)
 
 
 #10
-
+#best AIC if nothing is removed
+summary(TempbyAll)
 
 ```
 
 11. What is the final set of explanatory variables that the AIC method suggests we use to predict temperature in our multiple regression? How much of the observed variance does this model explain? Is this an improvement over the model using only depth as the explanatory variable?
 
-> Answer: 
+> Answer: The AIC suggested all the variables (depth, year4, and daynum) should
+be used to predict temperature. It explains 74.12% of the variance, vs 73.87% with
+just depth. This is a very slight improvement of 0.25%.
 
 
 
@@ -143,13 +147,21 @@ Let's tackle a similar question from a different approach. Here, we want to expl
 
 ```{r anova.model}
 #12
+JulyLakeTemp_AOV <- aov(data=JulyLakeTemp,temperature_C ~ lakename)
+summary(JulyLakeTemp_AOV)
+
+JulyLakeTemp_AOV2 <- lm(data=JulyLakeTemp,temperature_C ~ lakename)
+summary(JulyLakeTemp_AOV2)
 
 
 ```
 
 13. Is there a significant difference in mean temperature among the lakes? Report your findings. 
 
-> Answer: 
+> Answer: There is a significant different in mean temperature among the lakes
+(p < 0.001). With the exception of East Long Lake, the temperature of each lake
+is individually significantly different from that of other lakes with a p < 0.001; 
+while for East Long Lake it is significant with a p < 0.01.
 
 
 
@@ -157,34 +169,47 @@ Let's tackle a similar question from a different approach. Here, we want to expl
 
 ```{r scatterplot.2}
 #14.
-
-
+TempDepth2 <-
+  ggplot(JulyLakeTemp,aes(x=depth,y=temperature_C,color=lakename)) +
+  geom_point(alpha=0.5) +
+  geom_smooth(method="lm",se=FALSE) +
+  scale_color_brewer(palette="Set1") +
+  ylim(0,35) +
+  labs(x="Depth (m)",y="Temperature (C)",color="Lake")
+plot(TempDepth2)
 ```
 
 15. Use the Tukey's HSD test to determine which lakes have different means.
 
 ```{r tukey.test}
 #15
-
+TukeyHSD(JulyLakeTemp_AOV)
 
 ```
 
 16.From the findings above, which lakes have the same mean temperature, statistically speaking, as Peter Lake? Does any lake have a mean temperature that is statistically distinct from all the other lakes?
 
->Answer:
+>Answer: Paul Lake (p=0.22) and Ward Lake (p = 0.74) are not significantly different
+from Peter Lake and thus has the 'same' temperature. There is no lake with a mean
+temperature that is statistically distinct from all the other lakes.
 
  
 
 17. If we were just looking at Peter Lake and Paul Lake. What's another test we might explore to see whether they have distinct mean temperatures? 
 
->Answer: 
+>Answer: We could do a 2-sample t test.
 
 
 
 18. Wrangle the July data to include only records for Crampton Lake and Ward Lake. Run the two-sample T-test on these data to determine whether their July temperature are same or different. What does the test say? Are the mean temperatures for the lakes equal? Does that match you answer for part 16?
 
 ```{r t.test}
+JulyLakeTemp_CrampWard <- filter(JulyLakeTemp,lakename %in% c("Crampton Lake","Ward Lake"))
 
+t.test(JulyLakeTemp_CrampWard$temperature_C ~ JulyLakeTemp_CrampWard$lakename)
 ```
 
->Answer: 
+>Answer: The test measures if the means are equal to each other. It determines the
+p value to be 0.2649 which is different than that of part 16 (p = 0.9714). Nonetheless,
+it is in the appropriate order of magnitude and suggests the mean temperatures for the
+lakes are 'equal', or not statistically different.
