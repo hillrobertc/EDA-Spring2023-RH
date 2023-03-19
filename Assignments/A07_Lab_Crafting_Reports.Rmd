@@ -1,6 +1,6 @@
 ---
 title: 'A07 - Crafting Reports'
-author: "Student_name" 
+author: "Robert Hill" 
 date: "Spring 2023"
 output: pdf_document
 ---
@@ -25,6 +25,12 @@ output: pdf_document
 
 Create a table below summarizing the metadata of the EPA Air Quality data. The first column will be the metadata attribute item name: "Source", "Date", and "Filename". And the second column will include the metadata values: "EPA Air Quality SYstem (AQS)", "2018-2019", and "EPAair_O3_PM25_NC1819_Processed.csv". The first column should be aligned to the right and the second to the left.
 
+|Name       |Value                              |
+|----------:|:----------------------------------|
+|Source|EPA Aie Qualirt SYstem (AQS)|
+|Date|2018-2019|
+|File Name|EPAair_O3_PM25_NC1819_Processed.csv|
+
 ---
 
 ## Task 2 - Import packages and data, suppressing messages
@@ -37,7 +43,7 @@ library(tidyverse);library(lubridate);library(here);library(knitr)
 
 #Import EPA data (from the processed_KEY folder) & fix dates
 epa_data <- read.csv(
-  here("data","processed_KEY","EPAair_O3_PM25_NC1819_Processed.csv"),
+  here("Data","Processed_KEY","EPAair_O3_PM25_NC1819_Processed.csv"),
   stringsAsFactors = TRUE) %>% 
   mutate(Date = ymd(Date))
 ```
