@@ -2,7 +2,9 @@
 title: 'A07 - Crafting Reports'
 author: "Robert Hill" 
 date: "Spring 2023"
-output: pdf_document
+output:
+  pdf_document:
+    toc: TRUE
 ---
 
 ## Objectives:
@@ -94,7 +96,34 @@ kable(summary_Ozone, caption = "Mean Ozone", col.names =
 
 Create two separate code chunks that create boxplots of the distribution of Ozone levels by month using, one for only records collected in 2018 and one for records in 2019. Customize the chunk options such that the final figures are displayed but not the code used to generate the figures. In addition, the plots aligned on the left side of the page and set the figure heights so both plots fit on the same page with minimal space remaining. Lastly, add a `fig.cap` chunk option to add a caption (title) to your plot that will display underneath the figure.
 
+```{r, Ozone18, warning=F, fig.cap="Monthly Ozone, 2018", fig.height=3, echo=FALSE}
 
+Ozone2018 <- epa_data %>%
+  filter(Year == 2018)
+
+ggplot(Ozone2018,aes(x=factor(Month, level=1:12,labels=month.abb), y=Ozone)) +
+geom_boxplot() + 
+labs(
+  x = "Month",
+  y = "Concentration (\u00b5g/m\u00b3)",
+  title = "Recorded Ozone by month (2018)"
+)
+```
+
+
+```{r, Ozone19, warning=F, fig.cap="Monthly Ozone, 2019", fig.height=3, echo=FALSE}
+
+Ozone2019 <- epa_data %>%
+  filter(Year == 2019)
+
+ggplot(Ozone2019,aes(x=factor(Month, level=1:12,labels=month.abb), y=Ozone)) +
+geom_boxplot() + 
+labs(
+  x = "Month",
+  y = "Concentration (\u00b5g/m\u00b3)",
+  title = "Recorded Ozone by month (2019)",
+)
+```
 
 \newpage
 
@@ -102,6 +131,6 @@ Create two separate code chunks that create boxplots of the distribution of Ozon
 Add a table of contents to your document and knit to a PDF. Submit your PDF to Sakai, but also be sure to commit and push your Rmd file used to create this knit document to GitHub. In the section below, add a link to your GitHub repository. 
 
 ### Git Repository
-
+https://github.com/hillrobertc/EDA-Spring2023-RH
 
 
