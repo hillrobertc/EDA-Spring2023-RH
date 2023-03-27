@@ -91,6 +91,7 @@ colnames(Days) <- c('Date')
 
 #6
 GaringerOzone_Processed <- left_join(Days,GaringerOzone_select)
+colnames(GaringerOzone_Processed) <- c('Date', 'Ozoneppm', 'AQI')
 
 ```
 
@@ -100,10 +101,14 @@ GaringerOzone_Processed <- left_join(Days,GaringerOzone_select)
 
 ```{r}
 #7
-
+ggplot(GaringerOzone_Processed,aes(x=Date,y=Ozoneppm)) +
+  geom_line() +
+  geom_smooth(method="lm") +
+  labs(x="Date",y="Ozone (ppm)", title="Ozone Concentrations Over Time")
 ```
 
->Answer:
+>Answer:The plot suggests a seasonal trend; the linear trend shows an overall decrease
+in ozone concentration from 2010 to 2020.
 
 ## Time Series Analysis
 
@@ -113,10 +118,15 @@ Study question: Have ozone concentrations changed over the 2010s at this station
 
 ```{r}
 #8
-
+GaringerOzone_clean <- 
+  GaringerOzone_Processed %>%
+  mutate(Ozoneppm.clean = zoo::na.approx(Ozoneppm))
 ```
 
-> Answer: 
+> Answer: Piecewise assumes the NA value is equal to the neighboring value while
+the spline uses a quadratic formula to determine the NA value. We used linear because
+it is a more realistic representation of the NA values (i.e. the mid point between
+both neighboring values).
 
 
 9. Create a new data frame called `GaringerOzone.monthly` that contains aggregated data: mean ozone concentrations for each month. In your pipe, you will need to first add columns for year and month to form the groupings. In a separate line of code, create a new Date column with each month-year combination being set as the first day of the month (this is for graphing purposes only)
