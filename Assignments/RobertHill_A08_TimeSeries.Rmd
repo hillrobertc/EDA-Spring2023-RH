@@ -43,27 +43,38 @@ theme_set(mytheme)
 
 ```{r, message = FALSE}
 #2
-O3_2019 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2019_raw.csv", stringsAsFactors = TRUE)
+O3_2019 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2019_raw.csv",
+                    stringsAsFactors = TRUE)
 
-O3_2018 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2018_raw.csv", stringsAsFactors = TRUE)
+O3_2018 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2018_raw.csv",
+                    stringsAsFactors = TRUE)
 
-O3_2017 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2017_raw.csv", stringsAsFactors = TRUE)
+O3_2017 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2017_raw.csv",
+                    stringsAsFactors = TRUE)
 
-O3_2016 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2016_raw.csv", stringsAsFactors = TRUE)
+O3_2016 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2016_raw.csv",
+                    stringsAsFactors = TRUE)
 
-O3_2015 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2015_raw.csv", stringsAsFactors = TRUE)
+O3_2015 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2015_raw.csv",
+                    stringsAsFactors = TRUE)
 
-O3_2014 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2014_raw.csv", stringsAsFactors = TRUE)
+O3_2014 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2014_raw.csv",
+                    stringsAsFactors = TRUE)
 
-O3_2013 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2013_raw.csv", stringsAsFactors = TRUE)
+O3_2013 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2013_raw.csv",
+                    stringsAsFactors = TRUE)
 
-O3_2012 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2012_raw.csv", stringsAsFactors = TRUE)
+O3_2012 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2012_raw.csv",
+                    stringsAsFactors = TRUE)
 
-O3_2011 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2011_raw.csv", stringsAsFactors = TRUE)
+O3_2011 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2011_raw.csv",
+                    stringsAsFactors = TRUE)
 
-O3_2010 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2010_raw.csv", stringsAsFactors = TRUE)
+O3_2010 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2010_raw.csv",
+                    stringsAsFactors = TRUE)
 
-GaringerOzone <- rbind(O3_2010, O3_2011, O3_2012, O3_2013, O3_2014, O3_2015, O3_2016, O3_2017, O3_2018, O3_2019)
+GaringerOzone <- rbind(O3_2010, O3_2011, O3_2012, O3_2013, O3_2014, O3_2015, O3_2016,
+                       O3_2017, O3_2018, O3_2019)
 ```
 
 ## Wrangle
@@ -195,7 +206,8 @@ ggplot(GaringerOzone.monthly,aes(x=YearMonth,y=Ozoneppm.clean)) +
 
 14. To accompany your graph, summarize your results in context of the research question. Include output from the statistical test in parentheses at the end of your sentence. Feel free to use multiple sentences in your interpretation.
 
-> Answer: 
+> Answer: Based on monthly trends, the ozone concentration has decreased throughout
+the 2010s (Seasonal Mann Kendall score <0, p<0.05).
 
 15. Subtract the seasonal component from the `GaringerOzone.monthly.ts`. Hint: Look at how we extracted the series components for the EnoDischarge on the lesson Rmd file.
 
@@ -203,14 +215,27 @@ ggplot(GaringerOzone.monthly,aes(x=YearMonth,y=Ozoneppm.clean)) +
 
 ```{r}
 #15
+GaringerOzone.monthly_components <-
+  as.data.frame(GaringerOzone.monthly_decomp$time.series[,1:3])
 
-
+GaringerOzone.monthly_nonseasonal <-
+  data.frame(GaringerOzone.monthly$YearMonth,GaringerOzone.monthly$Ozoneppm.clean + 
+               GaringerOzone.monthly_components$seasonal)
+colnames(GaringerOzone.monthly_nonseasonal) <- c('Date', 'Ozoneppm')
 
 #16
 
+GaringerOzone.monthly_nonseasonal.ts <- ts(GaringerOzone.monthly_nonseasonal$Ozoneppm,
+                                           start=c(2010,1,1),frequency=12)
+
+GaringerOzone.monthly_trend2 <- Kendall::MannKendall(GaringerOzone.monthly_nonseasonal.ts)
+
+summary(GaringerOzone.monthly_trend2)
 
 
 
 ```
 
-> Answer: 
+> Answer: Removing the seasonal trend, there is no change in ozone variation in the
+2010s (p =0.83). Whereas, running a Seasonal MK trend with showed a statistically
+significant decrease in ozone concentration (p<0.05).
