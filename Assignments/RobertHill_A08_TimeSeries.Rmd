@@ -78,7 +78,7 @@ GaringerOzone <- rbind(O3_2010, O3_2011, O3_2012, O3_2013, O3_2014, O3_2015, O3_
 
 ```{r}
 #3
-#GaringerOzone$Date <- mdy(GaringerOzone$Date)
+GaringerOzone$Date <- mdy(GaringerOzone$Date)
 
 #4
 GaringerOzone_select <-
@@ -133,7 +133,16 @@ both neighboring values).
 
 ```{r}
 #9
+GaringerOzone.clean_add <-
+  GaringerOzone_clean %>%
+  mutate(Year = year(ymd(Date))) %>%
+  mutate(Month = month(ymd(Date))) %>%
+  unite("YearMonth", c(Year, Month), sep = "-")
 
+GaringerOzone.monthly <-
+  GaringerOzone.clean_add %>%
+  aggregate(Ozoneppm.clean ~ YearMonth, mean) %>%
+  mutate(YearMonth = as_date(ym(YearMonth)))
 ```
 
 
