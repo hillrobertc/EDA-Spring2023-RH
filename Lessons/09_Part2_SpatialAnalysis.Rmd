@@ -117,18 +117,19 @@ mapView(counties_sf, zcol = "AWATER")
 
 ```{r read HUCs shapefile}
 #Read the shapefile into an sf dataframe named "huc8_sf"
-
+huc8_sf <- st_read('./Data/Spatial/NCHUC8.shp')
 
 #Reveal the columns
-
+colnames(huc8_sf)
 
 #Check the CRS
-
+st_crs(huc8_sf)
 
 #Examine some records
 head(huc8_sf)
 
 #View the data as a map, colored by the acreage in each
+mapview(huc8_sf, zcol = 'ACRES')
 
 
 
@@ -141,11 +142,13 @@ head(huc8_sf)
 
 ```{r Select the Upper Neuse HUC 8}
 #Read the shapefile into an sf dataframe
-
+upperNeuse_sf <- st_read('./Data/Spatial/NCHUC8.shp') %>%
+  filter(SUBBASIN == 'Upper Neuse')
 
 
 #Create a map
-
+mapview(huc8_sf, col.regions = 'purple') +
+  mapview(upperNeuse_sf, col.regions = 'orange')
 
 
 
@@ -287,14 +290,19 @@ mapview(state_sf)
 
 ```{r Aggregate the HUC data on an attribute, saving as huc2_sf}
 #List the unique values in the DWQ_Basin field
-
+unique(huc8_sf$DWQ_Basin)
 
 
 #Summarize on DWQ Basin value
-
+huc2_sf <- huc8_sf %>%
+  group_by(DWQ_Basin) %>%
+  summarize(
+    ACRES = sum(ACRES),
+    SQ_MILE = sum(SQ_MILES)
+  )
 
 #Map the data
-
+mapview(huc2_sf, zcol = 'ACRES')
 
 ```
 
@@ -352,7 +360,7 @@ neuse_intersect_1 <- counties_sf_utm[neuse_sf,]
 
 #Select intersecting counties using the `filter()` command
 neuse_intersect_2 <- counties_sf_utm %>% 
-  filter(st_intersects(x = ., y = neuse_sf, sparse = FALSE))
+  st_filter(neuse_sf, .pred = st_intersects)
 
 #View the result
 myMap + mapview(neuse_intersect_2, alpha.regions = 0)
