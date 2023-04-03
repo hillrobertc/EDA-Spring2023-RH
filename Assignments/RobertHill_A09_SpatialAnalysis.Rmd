@@ -1,11 +1,14 @@
 ---
-title: "Assignment 9: Spatial Analysis in R"
+title: 'Assignment 9: Spatial Analysis in R'
 author: "Robert Hill"
-output: pdf_document
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
 geometry: margin=2.54cm
-editor_options: 
+editor_options:
   chunk_output_type: console
-  markdown: 
+  markdown:
     wrap: 72
 ---
 
@@ -121,12 +124,9 @@ colnames(NE_gagelocation_sf)
 ```{r Plot the spatial features}
 #13. Plot the gage locations atop the county features
 ggplot() +
-  geom_sf(data=NE_county_sf)
-
-ggplot() + 
-  geom_sf(data=counties_sf_join,aes(fill = E_POV),alpha=0.3) + 
-  scale_fill_gradient2(low="red",high="blue",midpoint = 60000) + 
-  geom_sf(data=epa_pm25_sites_sf)
+  geom_sf(data=NE_county_sf,aes()) +
+  geom_sf(data=NE_gagelocation_sf,aes()) +
+  labs(title="NWIS Gage Locations in Nebraska",subtitle = "Robert Hill")
 
 ```
 
