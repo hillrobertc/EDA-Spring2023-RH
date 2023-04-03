@@ -174,7 +174,12 @@ Now we can examine where the flooding appears most acute by visualizing gage hei
 
 ```{r}
 #Map the points, sized by gage height
-
+mapview(NE_county_sf, col.regions = "grey",
+        alpha.regions= 0.3,
+        layer.name = "Nebraska Counties") +
+  mapview(NE_gage, zcol = "mean_gageht", cex = 3, 
+          col.regions = c("blue", "yellow", "red"),
+          layer.name = "Gage Height")
 
 ```
 
@@ -192,10 +197,17 @@ Up next we will do some spatial analysis with our data. To prepare for this, we 
 
 ```{r}
 #20 Transform the counties and gage location datasets to UTM Zone 14
-
+NE_county_utm <- st_transform(NE_county_sf, crs=32614)
+NE_gage_utm <- st_transform(NE_gage, crs=32614)
 
 #21 Plot the data
-
+mapview(NE_county_utm, zcol = "NAME",
+        alpha.regions= 0.3,
+        layer.name = "Nebraska Counties",
+        legend=FALSE) +
+  mapview(NE_gage_utm, zcol = "mean_gageht", cex = 3, 
+          col.regions = c("blue", "yellow", "red"),
+          layer.name = "Gage Height")
 
 ```
 
@@ -213,13 +225,22 @@ Now let's zoom into a particular county and examine the gages located there.
 
 ```{r}
 #22 Select the county
-
+Douglas <- NE_county_utm %>%
+   filter(NAME == "Douglas")
 
 #23 Select gages within the selected county
-
+Douglas_gage <- NE_gage_utm[Douglas,]
 
 #24 Plot
-
+mapview(NE_county_utm, col.regions = "grey",
+        alpha.regions= 0.3,
+        layer.name = "NE Counties") +
+  mapview(Douglas, col.regions = "purple",
+        alpha.regions= 0.5,
+        layer.name = "Douglas County") +
+  mapview(Douglas_gage, zcol = "mean_gageht", cex = 2, 
+          col.regions = c("blue", "yellow", "red"),
+          layer.name = "Gage Height")
 
 
 ```
