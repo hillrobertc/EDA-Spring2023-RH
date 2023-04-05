@@ -1,6 +1,6 @@
 ---
 title: "Assignment 10: Data Scraping"
-author: "Student Name"
+author: "Robert Hill"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -27,9 +27,9 @@ This exercise accompanies the lessons in Environmental Data Analytics on data sc
 * Check your working directory
 
 ```{r, message = FALSE}
-#1
-
-
+#1 
+library(tidyverse);library(rvest);library(lubridate);library(here)
+getwd()
 ```
 
 2. We will be scraping data from the NC DEQs Local Water Supply Planning website, specifically the Durham's 2022 Municipal Local Water Supply Plan (LWSP): 
@@ -41,7 +41,8 @@ Indicate this website as the as the URL to be scraped. (In other words, read the
 
 ```{r set.the.scraping.website}
 #2
-
+theURL <- 
+  read_html("https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=03-32-010&year=2022")
 
 ```
 
@@ -57,17 +58,21 @@ Indicate this website as the as the URL to be scraped. (In other words, read the
 
 In the code chunk below scrape these values, assigning them to four separate variables.
 
->HINT: The first value should be "Durham", the second "03-32-010", the third "Municipality", and the last should be a vector of 12 numeric values (represented as strings), with the first value being "27.6400".
+>HINT: The first value should be "Durham", the second "03-32-010", the third "Municipality", and the last should be a vector of 12 numeric values (represented as strings), with the first value being "36.1000".
 
 ```{r scrape.the.data}
 #3
-water.system.name <- 
+water.system.name <- html_node(theURL,"div+ table tr:nth-child(1) td:nth-child(2)") %>%
+  html_text()
   
-PWSID <- 
+PWSID <- html_node(theURL,"td tr:nth-child(1) td:nth-child(5)") %>%
+  html_text()
   
-ownership <- 
+ownership <- html_node(theURL,"div+ table tr:nth-child(2) td:nth-child(4)") %>%
+  html_text()
 
-max.withdrawals.mgd <- 
+max.withdrawals.mgd <- html_nodes(theURL,"th~ td+ td") %>%
+  html_text()
 
 ```
 
@@ -78,15 +83,26 @@ max.withdrawals.mgd <-
 
 >NOTE: It's likely you won't be able to scrape the monthly widthrawal data in chronological order. You can overcome this by creating a month column manually assigning values in the order the data are scraped: "Jan", "May", "Sept", "Feb", etc... Or, you could scrape month values from the web page...
 
-5. Create a line plot of the average daily withdrawals across the months for 2022
+5. Create a line plot of the max daily withdrawals across the months for 2022
 
 ```{r create.a.dataframe.from.scraped.data}
 #4
-
+the_df <- data.frame(
+  "Month" = rep(1:12),
+  "Water_System_Name" = water.system.name,
+  "PWSID" = PWSID,
+  "Ownership" = ownership,
+  "Max_Withdrawals_mgd" = as.numeric(max.withdrawals.mgd)
+)
 
 
 #5
-
+ggplot(the_df,aes(x=Month,y=Max_Withdrawals_mgd)) + 
+  geom_line() + 
+  geom_smooth(method="loess",se=FALSE) +
+  labs(title = paste("2022 Water Usage of Durham"),
+       y="Withdrawal (mgd)",
+       x="Month")
 
 ```
 
