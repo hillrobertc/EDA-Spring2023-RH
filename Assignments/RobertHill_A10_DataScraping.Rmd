@@ -28,7 +28,7 @@ This exercise accompanies the lessons in Environmental Data Analytics on data sc
 
 ```{r, message = FALSE}
 #1 
-library(tidyverse);library(rvest);library(lubridate);library(here)
+library(tidyverse);library(rvest);library(lubridate);library(here);library(scales)
 getwd()
 ```
 
@@ -98,11 +98,12 @@ the_df$Date <- (my(paste(the_df$Month,"-2022")))
 
 
 #5
-ggplot(the_df,aes(x=Month,y=Max_Withdrawals_mgd)) + 
+ggplot(the_df,aes(x=Date,y=Max_Withdrawals_mgd)) + 
   geom_line() + 
   labs(title = paste("2022 Water Usage of Durham"),
-       y="Withdrawal (mgd)",
-       x="Month")
+       y="Max Daily Withdrawal (mgd)",
+       x="Month") +
+  scale_x_date(date_labels = "%b")
 
 ```
 
@@ -110,7 +111,37 @@ ggplot(the_df,aes(x=Month,y=Max_Withdrawals_mgd)) +
 
 ```{r construct.a.scraping.function}
 #6.
-
+scrape.it <- function(PWSID,the_year){
+  the_URL <- read_html(paste0('https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=',PWSID,'&year=',the_year))
+  
+  
+  water.system.name <- html_node(the_URL,"div+ table tr:nth-child(1) td:nth-child(2)") %>%
+    html_text()
+  PWSID <- html_node(the_URL,"td tr:nth-child(1) td:nth-child(5)") %>%
+    html_text()
+  ownership <- html_node(the_URL,"div+ table tr:nth-child(2) td:nth-child(4)") %>%
+    html_text()
+  max.withdrawals.mgd <- html_nodes(the_URL,"th~ td+ td") %>%
+    html_text()
+  df_function <- data.frame(
+    "Month" = rep(1:12),
+    "Water_System_Name" = water.system.name,
+    "PWSID" = PWSID,
+    "Ownership" = ownership,
+    "Max_Withdrawals_mgd" = as.numeric(max.withdrawals.mgd)
+    )
+  df_function$Date <- (my(paste(the_df$Month,"-",the_year)))
+  
+  plot_function <- ggplot(df_function,aes(x=Date,y=Max_Withdrawals_mgd)) + 
+    geom_line() + 
+    labs(title = paste(the_year, "Water Usage of Durham"),
+         y="Max Daily Withdrawal (mgd)", x="Month") +
+    scale_x_date(date_labels = "%b")
+  
+  
+  print(plot_function)
+  return(df_function)
+}
 
 ```
 
@@ -118,7 +149,7 @@ ggplot(the_df,aes(x=Month,y=Max_Withdrawals_mgd)) +
 
 ```{r fetch.and.plot.Durham.2015.data}
 #7
-
+Durham2015 <-scrape.it('03-32-010',2015)
 
 ```
 
@@ -126,7 +157,15 @@ ggplot(the_df,aes(x=Month,y=Max_Withdrawals_mgd)) +
 
 ```{r fetch.and.plot.Asheville.2015.data}
 #8
+Asheville2015 <- scrape.it('01-11-010',2015)
 
+combined2015 <- bind_rows(Asheville2015,Durham2015)
+
+ggplot(combined2015,aes(x=Date,y=Max_Withdrawals_mgd,color=Water_System_Name)) +
+  geom_line() + 
+  labs(title = paste("2015 Water Usage of Cities in North Carolina"),
+       y="Max Daily Withdrawal (mgd)", x="Month", color="City") +
+  scale_x_date(date_labels = "%b")
 
 ```
 
