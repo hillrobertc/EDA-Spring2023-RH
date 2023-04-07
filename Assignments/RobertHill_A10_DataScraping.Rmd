@@ -88,7 +88,7 @@ max.withdrawals.mgd <- html_nodes(theURL,"th~ td+ td") %>%
 ```{r create.a.dataframe.from.scraped.data}
 #4
 the_df <- data.frame(
-  "Month" = rep(1:12),
+  "Month" = c(1,5,9,2,6,10,3,7,11,4,8,12),
   "Water_System_Name" = water.system.name,
   "PWSID" = PWSID,
   "Ownership" = ownership,
@@ -111,8 +111,10 @@ ggplot(the_df,aes(x=Date,y=Max_Withdrawals_mgd)) +
 
 ```{r construct.a.scraping.function}
 #6.
+#function with plot
 scrape.it <- function(PWSID,the_year){
-  the_URL <- read_html(paste0('https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=',PWSID,'&year=',the_year))
+  the_URL <- read_html(paste0('https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=',
+                              PWSID,'&year=',the_year))
   
   
   water.system.name <- html_node(the_URL,"div+ table tr:nth-child(1) td:nth-child(2)") %>%
@@ -124,7 +126,7 @@ scrape.it <- function(PWSID,the_year){
   max.withdrawals.mgd <- html_nodes(the_URL,"th~ td+ td") %>%
     html_text()
   df_function <- data.frame(
-    "Month" = rep(1:12),
+    "Month" = c(1,5,9,2,6,10,3,7,11,4,8,12),
     "Water_System_Name" = water.system.name,
     "PWSID" = PWSID,
     "Ownership" = ownership,
@@ -134,12 +136,38 @@ scrape.it <- function(PWSID,the_year){
   
   plot_function <- ggplot(df_function,aes(x=Date,y=Max_Withdrawals_mgd)) + 
     geom_line() + 
-    labs(title = paste(the_year, "Water Usage of Durham"),
-         y="Max Daily Withdrawal (mgd)", x="Month") +
+    labs(title = paste(the_year, "Water Usage of",water.system.name),
+         y="Max Daily Withdrawal (mgd)", x="Month",) +
     scale_x_date(date_labels = "%b")
   
   
   print(plot_function)
+  return(df_function)
+}
+
+#function without plot
+scrape.it2 <- function(PWSID,the_year){
+  the_URL <- read_html(paste0('https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=',
+                              PWSID,'&year=',the_year))
+  
+  
+  water.system.name <- html_node(the_URL,"div+ table tr:nth-child(1) td:nth-child(2)") %>%
+    html_text()
+  PWSID <- html_node(the_URL,"td tr:nth-child(1) td:nth-child(5)") %>%
+    html_text()
+  ownership <- html_node(the_URL,"div+ table tr:nth-child(2) td:nth-child(4)") %>%
+    html_text()
+  max.withdrawals.mgd <- html_nodes(the_URL,"th~ td+ td") %>%
+    html_text()
+  df_function <- data.frame(
+    "Month" = c(1,5,9,2,6,10,3,7,11,4,8,12),
+    "Water_System_Name" = water.system.name,
+    "PWSID" = PWSID,
+    "Ownership" = ownership,
+    "Max_Withdrawals_mgd" = as.numeric(max.withdrawals.mgd)
+    )
+  df_function$Date <- (my(paste(the_df$Month,"-",the_year)))
+  
   return(df_function)
 }
 
@@ -176,7 +204,24 @@ ggplot(combined2015,aes(x=Date,y=Max_Withdrawals_mgd,color=Water_System_Name)) +
 
 ```{r fetch.and.plot.Asheville.multiyear.data }
 #9 
+ID <- rep('01-11-010',12)
+the_years <- seq(2010,2021)
+df_Ashville <- map2(ID,the_years,scrape.it2) %>%
+  bind_rows()
+
+ggplot(df_Ashville,aes(x=Date,y=Max_Withdrawals_mgd)) +
+  geom_line() + 
+  geom_smooth(method="loess",se=FALSE) +
+  labs(title = paste("Water Usage in Ashville Since 2010"),
+       y="Max Daily Withdrawal (mgd)",
+       x="Month") +
+  scale_x_date(date_labels = "%b %Y", date_breaks = "12 months",
+               limits=as.Date(c("2010-01-01","2022-01-01")),
+               minor_breaks = "2 months") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.5))
 
 ```
 
 > Question: Just by looking at the plot (i.e. not running statistics), does Asheville have a trend in water usage over time?
+
+>Answer: yes, there is an increasing trend in water usage.
